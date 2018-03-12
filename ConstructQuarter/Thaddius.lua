@@ -21,7 +21,7 @@ local warnChargeChanged		= mod:NewSpecialWarning("WarningChargeChanged")
 local warnChargeNotChanged	= mod:NewSpecialWarning("WarningChargeNotChanged", false)
 local warnThrow				= mod:NewSpellAnnounce(28338, 2)
 local warnThrowSoon			= mod:NewSoonAnnounce(28338, 1)
-local warnStomp				= mod:NewSpellAnnounce(28125, 2)
+local warnStomp				= mod:NewSpellAnnounce(45185, 2)
 
 local enrageTimer			= mod:NewBerserkTimer(365)
 local timerNextShift		= mod:NewNextTimer(20, 28089)
