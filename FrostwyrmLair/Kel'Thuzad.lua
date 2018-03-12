@@ -70,12 +70,14 @@ function mod:OnCombatStart(delay)
 	
 	timerChainsOfKelthuzad:Start(PHASE_ONE_DURATION+100) -- first mind control should be 100 seconds after Phase One ends
 	
-	self:Schedule(PHASE_ONE_DURATION-10, DBM.RangeCheck.Show, DBM.RangeCheck, 11) -- activate an 11 yard range check just before Phase Two begins
+	if self.Options.ShowRange then
+		self:Schedule(PHASE_ONE_DURATION-10, DBM.RangeCheck.Show, DBM.RangeCheck, 11) -- activate an 11 yard range check just before Phase Two begins
+	end
 end
 
 function mod:OnCombatEnd()
 	if self.Options.ShowRange then
-		self:RangeToggle(false) -- disable range check when combat ended
+		DBM.RangeCheck.Hide()
 	end
 end
 
