@@ -10,7 +10,7 @@ mod:EnableModel()
 
 mod:RegisterEvents(
 	"SPELL_AURA_APPLIED",
-	"SPELL_CAST_SUCCESS"
+	"CHAT_MSG_RAID_BOSS_EMOTE"
 )
 
 local warnWebWrap		= mod:NewTargetAnnounce(28622, 2)
@@ -42,6 +42,7 @@ end
 
 function mod:SPELL_AURA_APPLIED(args)
 	if args:IsSpellID(28622) then -- Web Wrap
+		timerWebWrap:Start()
 		warnWebWrap:Show(args.destName)
 		if args.destName == UnitName("player") then
 			SendChatMessage(L.YellWebWrap, "YELL")
@@ -49,15 +50,14 @@ function mod:SPELL_AURA_APPLIED(args)
 	end
 end
 
-function mod:SPELL_CAST_SUCCESS(args)
-	if args:IsSpellID(29484, 28622) then -- Web Spray
+function mod:CHAT_MSG_RAID_BOSS_EMOTE(msg)
+	if msg == "Spiderlings appear on the web!" then
+		warnSpidersSoon:Schedule(35)
+		warnSpidersNow:Show()
+		timerSpider:Start()
+	elseif msg == "%s sprays strands of web everywhere!" or msg == "Maexxna sprays strands of web everywhere!" then
 		warnWebSprayNow:Show()
 		warnWebSpraySoon:Schedule(25)
 		timerWebSpray:Start()
-		warnSpidersSoon:Schedule(25)
-		warnSpidersNow:Schedule(30)
-		timerSpider:Start()
-    elseif args:IsSpellID(54125) then
-		timerWebWrap:Start()
 	end
 end
