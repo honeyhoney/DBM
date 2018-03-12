@@ -21,7 +21,7 @@ local SPELL_SHADOW_FISSURE = 27810 -- Shadow Fissure
 -----
 local timerChainsOfKelthuzad = mod:NewNextTimer(90, SPELL_CHAINS_OF_KELTHUZAD) -- every 90 seconds
 local timerFrostBlast = mod:NewNextTimer(30, SPELL_FROST_BLAST) -- every 30 seconds
-local timerFrostboltVolley = mod:NewNextTimer(30, SPELL_FROSTBOLT_VOLLEY) -- every 20 seconds
+local timerFrostboltVolley = mod:NewNextTimer(20, SPELL_FROSTBOLT_VOLLEY) -- every 20 seconds
 local timerDetonateMana = mod:NewNextTimer(20, SPELL_DETONATE_MANA) -- every 20 seconds
 local timerShadowFissure = mod:NewNextTimer(15, SPELL_SHADOW_FISSURE) -- every 15 seconds
 
