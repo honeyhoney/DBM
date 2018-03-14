@@ -17,6 +17,7 @@ mod:RegisterEvents(
 local warnDecimateSoon	= mod:NewSoonAnnounce(54426, 2)
 local warnDecimateNow	= mod:NewSpellAnnounce(54426, 3)
 
+local enrageTimer		= mod:NewBerserkTimer(420)
 local timerDecimate		= mod:NewCDTimer(105, 54426)
 
 local decimateCounter
