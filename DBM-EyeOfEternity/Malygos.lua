@@ -8,7 +8,6 @@ mod:RegisterCombat("yell", L.YellPull)
 
 mod:RegisterEvents(
 	"CHAT_MSG_RAID_BOSS_EMOTE",
-	"SPELL_CAST_SUCCESS",
 	"CHAT_MSG_MONSTER_YELL",
 	"SPELL_AURA_APPLIED"
 )
@@ -24,13 +23,21 @@ local specWarnSurge		= mod:NewSpecialWarningYou(60936)
 
 local enrageTimer		= mod:NewBerserkTimer(495)
 local timerSpark		= mod:NewTimer(30, "TimerSpark", 59381)
-local timerVortex		= mod:NewCastTimer(11, 56105)
+local timerVortex		= mod:NewCastTimer(5, 56105)
 local timerVortexCD		= mod:NewNextTimer(60, 56105)
 local timerBreath		= mod:NewTimer(59, "TimerBreath", 60072)
 local timerAchieve      = mod:NewAchievementTimer(360, 1875, "TimerSpeedKill")
 
 local guids = {}
 local surgeTargets = {}
+
+local function PullCheck()
+	if UnitName("target") == "Malygos" and UnitExists("targettarget") then
+		mod:SendSync("Pull")
+	else
+		mod:Schedule(0.5, PullCheck)
+	end
+end
 
 local function buildGuidTable()
 	for i = 1, GetNumRaidMembers() do
@@ -39,9 +46,9 @@ local function buildGuidTable()
 end
 
 function mod:OnCombatStart(delay)
+	self:Schedule(0.5, PullCheck, self)
 	enrageTimer:Start(-delay)
 	timerAchieve:Start(-delay)
-	table.wipe(guids)
 end
 
 function mod:CHAT_MSG_RAID_BOSS_EMOTE(msg)
@@ -52,18 +59,6 @@ function mod:CHAT_MSG_RAID_BOSS_EMOTE(msg)
 	end
 end
 
-function mod:SPELL_CAST_SUCCESS(args)
-	if args:IsSpellID(56105) then
-		timerVortexCD:Start()
-		warnVortexSoon:Schedule(54)
-		warnVortex:Show()
-		timerVortex:Start()
-		if timerSpark:GetTime() < 11 and timerSpark:IsStarted() then
-			timerSpark:Update(18, 30)
-		end
-	end
-end
-
 function mod:CHAT_MSG_MONSTER_YELL(msg)
 	if msg:sub(0, L.YellPhase2:len()) == L.YellPhase2 then
 		self:SendSync("Phase2")
@@ -71,6 +66,8 @@ function mod:CHAT_MSG_MONSTER_YELL(msg)
 		self:SendSync("BreathSoon")
 	elseif msg:sub(0, L.YellPhase3:len()) == L.YellPhase3 then
 		self:SendSync("Phase3")
+	elseif msg:sub(0, L.YellVortex:len()) == L.YellVortex then
+		self:SendSync("Vortex")
 	end
 end
 
@@ -110,8 +107,21 @@ function mod:OnSync(event, arg)
 		warnBreath:Schedule(1)
 	elseif event == "BreathSoon" then
 		warnBreathInc:Show()
+	elseif event == "Pull" then
+		timerVortexCD:Start(30)
+		timerSpark:Start(10)
+		table.wipe(guids)
+		self:Unschedule(PullCheck)
 	elseif event == "Phase3" then
 		self:Schedule(6, buildGuidTable)
 		timerBreath:Stop()
+	elseif event == "Vortex" then
+		timerVortexCD:Start()
+		warnVortexSoon:Schedule(54)
+		warnVortex:Show()
+		timerVortex:Start()
+		if timerSpark:GetTime() < 11 and timerSpark:IsStarted() then
+			timerSpark:Update(18, 30)
+		end
 	end
 end
